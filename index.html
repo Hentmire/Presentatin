@@ -1,0 +1,327 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>V.Udodova Presentation</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/Beige.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+
+				<section>
+					<h2>Scope, execution context and closures</h2>
+				</section>
+
+				<section>
+					<dl>
+						<dt>
+							<h3>Scope</h3>
+						</dt>
+						<dd>
+							is the region of a computer program in which a variable is associated with a value.
+						</dd>
+					</dl>
+					<p>
+						Context and scope are not the same!
+					</p>
+				</section>
+
+				<section>
+					<h3>Global and local variables</h3>
+					<pre><code class="hljs" data-trim contenteditable>
+						function createVariable() {
+							var variable = 'Am I local or global?';
+						}
+
+						console.log(variable); // error, it's local
+					</code></pre>
+					<span>Another example:</span>
+					<pre><code class="hljs" data-trim contenteditable>
+						var variable = 'Hello, I\'m global';
+
+						function createLocalVariable() {
+							var variable = 'Hello, I\'m local';
+							console.log(variable);
+						}
+
+						createLocalVariable(); // Hello, I'm local / Scope1
+						createLocalVariable(); // Hello, I'm local / Scope2
+						console.log(variable); // Hello, I'm global
+					</code></pre>
+				</section>
+
+				<section>
+					<h3>Hoisting</h3>
+					<p>
+						 - is js-mechanism where variables and function declarations are moved to the top of their scope before code execution.
+					</p>
+					<span>If we do this:</span>
+					<pre><code class="hljs" data-trim contenteditable>
+					 console.log (greeter);
+					 var greeter = 'Hello!'';
+					</code></pre>
+					<span>For interpreter it's look like this:</span>
+					<pre><code class="hljs" data-trim contenteditable>
+					 var greeter;
+					 console.log(greeter); // greeter is undefined
+					 greeter = 'Hello!';
+					</code></pre>
+				</section>
+
+				<section>
+					<h3>Hoisting</h3>
+					<pre><code class="hljs" data-trim contenteditable>
+						function sayHello() {
+							console.log (greeter);
+							var greeter = 'Hello!';
+							console.log(greeter);
+						}
+
+						sayHello(); // undefined, then 'Hello';
+					</code></pre>
+				</section>
+
+				<section>
+					<h3>Let</h3>
+					<span>Let has a block scope:</span>
+					<pre><code class="hljs" data-trim contenteditable>
+						   let times = 4;
+
+						   if (times > 3) {
+						        let hello = 'Hello!';
+						        console.log(hello); // 'Hello!'
+						    }
+
+						   console.log(hello); // hello is not defined
+					</code></pre>
+					<span>and can be updated, but can't be re-declared:</span>
+					<pre><code class="hljs" data-trim contenteditable>
+						let greeting = 'Hi';
+						greeting = 'Hello'; // works well
+						let greeting = 'Hello'; // error:
+						//Identifier 'greeting' has already been declared
+					</code></pre>
+				</section>
+
+				<section>
+					<h3>Hoisting of let</h3>
+					<span>Let declarations are hoisted to the top, but the let keyword is not initialized:</span>
+					<pre><code class="hljs" data-trim contenteditable>
+						 console.log (greeter); // ReferenceError: greeter is not defined
+						 let greeter = 'Hello!';
+					</code></pre>
+				</section>
+
+				<section>
+					<h3>Const</h3>
+					<span>Const has a block scope:</span>
+					<pre><code class="hljs" data-trim contenteditable>
+							 let times = 4;
+
+							 if (times > 3) {
+										const hello = 'Hello!';
+										console.log(hello); // 'Hello!'
+								}
+
+							 console.log(hello); // hello is not defined
+					</code></pre>
+					<span>and can not be updated or re-declared in their scope:</span>
+					<pre><code class="hljs" data-trim contenteditable>
+						const greeting = 'Hi';
+						greeting = 'Hello'; // TypeError: Assignment to constant variable.
+						const greeting = 'Hello'; // SyntaxError:
+						//Identifier 'greeting' has already been declared
+					</code></pre>
+				</section>
+
+				<section>
+					<h3>Execution context stack or call stack</h3>
+					<img width="900" data-src="http://davidshariff.com/blog/wp-content/uploads/2012/06/ecstack.jpg" alt="Execution context stack">
+				</section>
+
+				<section>
+					<dl>
+						<dt>
+							Execution context (EC)
+						</dt>
+						<dd>
+							is the environment in which JavaScript code is executed.
+						</dd>
+					</dl>
+					<img  data-src="https://www.datchley.name/content/images/2015/11/js-es5-scope-1-.png" alt="Execution context stack">
+				</section>
+
+				<section>
+					<h4>In execution context interpreter creates:</h4>
+					<img  width="550" data-src="http://dmitrysoshnikov.com/wp-content/uploads/execution-context.png" alt="Execution context stack">
+				</section>
+
+				<section>
+					<h3>The scope chain</h3>
+					<span>The scope chain contains all variable objects and all scopes for every execution context in the execution stack. Because of them, execution contexts will be able to access variables and functions delared in any parent (previous) scope.</span>
+				</section>
+
+				<section>
+					<h3>The scope chain</h3>
+					<pre><code class="hljs" data-trim contenteditable>
+						let x = 10;
+						function foo() {
+							let y = 20;
+							function bar() {
+								let z = 15;
+								return x + y + z;
+							}
+							return bar();
+						}
+						console.log(foo()); // result is 45
+					</code></pre>
+					<img  data-src="https://cdn-images-1.medium.com/max/1600/1*CwxZxltknV8DEEm_Y_ykfA.png" alt="The scope chain">
+				</section>
+
+				<section>
+					<h4>And the execution context is:</h4>
+					<pre><code class="hljs" data-trim contenteditable>
+						let a = 4;
+						function foo(x) {
+							let b = x * 4;
+							function bar(y) {
+								let c = y * b;
+								return c;
+							}
+							return bar(b);
+						}
+						console.log(foo(a)); // result is 256
+					</code></pre>
+					<img  data-src="https://www.datchley.name/content/images/2015/11/Execution-Stack---JS.png" alt="Call stack">
+				</section>
+
+				<section>
+					<h3>Closures</h3>
+					<ul>
+						<li>
+							is an inner function that has access to the outer scope, even after the outer scope has executed;
+						</li>
+						<br />
+						<li>
+							is a function that refer to free variables in their scope;
+						</li>
+						<br />
+						<li>
+							ans is combination of code blocke and all saved parent scopes.
+						</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>A simple closure example:</h3>
+					<pre><code class="hljs" data-trim contenteditable>
+						function foo() {
+						    let localVariable = 'private variable';
+						    return function() {
+						        return localVariable;
+						    }
+						}
+
+						let getLocalVariable = foo();
+						getLocalVariable(); // 'private variable'
+					</code></pre>
+				</section>
+
+				<section>
+					<h3>Closure example:</h3>
+					<pre><code class="hljs" data-trim contenteditable>
+						(function autorun(){
+						    let x = 1;
+						    function log(){
+						      console.log(x);
+						    };
+
+						    function run(fn){
+						      let x = 100;
+						      fn();
+						    }
+
+						    run(log); // 1, not 100
+						})();
+					</code></pre>
+				</section>
+
+				<section>
+					<h3>Closure example:</h3>
+					<pre><code class="hljs" data-trim contenteditable>
+						let phrase = 'Привет';
+
+						function sayHi(name) {
+							console.log(phrase + ', ' + name);
+						}
+
+						sayHi('Вася');  // Привет, Вася
+
+						phrase = 'Пока';
+
+						sayHi('Вася'); // Пока, Вася
+
+					</code></pre>
+				</section>
+
+				<section>
+					<h3>Closure example:</h3>
+					<pre><code class="hljs" data-trim contenteditable>
+							function createClosure(num) {
+							  let array = [1, 2, 3];
+							  function doSomething(i) {
+							    num += i;
+							    array.push(num);
+							    console.log('num: ' + num);
+							    console.log('array: ' + array);
+							  }
+							  return doSomething;
+							}
+							let foo = createClosure(2); // closure #1
+							let bar = createClosure(6); // closure #2
+							foo(2); // num: 4;    array: 1,2,3,4
+							bar(2); // num: 8;    array: 1,2,3,8
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Closures are useful!</h2>
+					<p>
+						Closures are of great practical importance. One of the classic techniques is to keep a reference to a private variable that cannot be changed from the external context. Also closures make it easy to work with async tasks like timers, events, AJAX calls.
+					</p>
+				</section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			Reveal.initialize({
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
